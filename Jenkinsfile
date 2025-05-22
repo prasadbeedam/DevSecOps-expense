@@ -32,7 +32,7 @@ pipeline {
             steps {
                 sh """
                 aws eks update-kubeconfig --region us-east-1 --name roboshop
-                kubectl run mysql manifest.yaml
+                kubectl apply -f manifest.yaml
                 """
             }
         }
