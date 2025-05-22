@@ -15,7 +15,7 @@ pipeline {
                 sh """
                 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 202533543549.dkr.ecr.us-east-1.amazonaws.com
                 docker build -t 202533543549.dkr.ecr.us-east-1.amazonaws.com/expense/dev/mysql:v1.0.1 .
-
+                docker push 202533543.dkr.ecr.us-east-1.amazonaws.com/expense/dev/mysql:v1.0.1
                 """
             }
         }
