@@ -30,9 +30,10 @@ pipeline {
 
         stage('deploy') {
             steps {
-                sh 'echo this is deploy'
-                deleteDir()
-                sh "ls -ltr"
+                sh """
+                aws eks update-kubeconfig --region us-east-1 --name roboshop
+                kubectl run mysql manifest
+                """
             }
         }
         
