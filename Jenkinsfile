@@ -32,6 +32,7 @@ pipeline {
             steps {
                 sh 'echo this is deploy'
                 deleteDir()
+                ls -ltr
             }
         }
         
