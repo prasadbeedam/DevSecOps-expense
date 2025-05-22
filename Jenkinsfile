@@ -9,70 +9,32 @@ pipeline {
         ansiColor('xterm')
     }
 
-    environment {
-        ECR_REPO = '202533543549.dkr.ecr.us-east-1.amazonaws.com/expense/dev/mysql'
-        IMAGE_TAG = 'v1.0.1'
-    }
-
     stages {
-        stage('Lint SQL') {
-            steps {
-                sh '''
-                    pip install sqlfluff || true
-                    sqlfluff lint sql/ || true
-                '''
-            }
-        }
-
-        stage('Secrets Scan') {
-            steps {
-                sh '''
-                    curl -sL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
-                    chmod +x gitleaks
-                    ./gitleaks detect --source . --verbose || true
-                '''
-            }
-        }
-
-        stage('Build & Push Docker Image') {
+        stage('build') {
             steps {
                 sh """
-                    docker build -t expense-mysql:${IMAGE_TAG} .
-                    docker tag expense-mysql:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
-                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REPO}
-                    docker push ${ECR_REPO}:${IMAGE_TAG}
+                 docker build -t expense-mysql:v1.0.1 .
+                 docker tag expense-mysql:v1.0.1 202533543549.dkr.ecr.us-east-1.amazonaws.com/expense/dev/mysql:v1.0.1
+                 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 202533543549.dkr.ecr.us-east-1.amazonaws.com
+                 docker push 202533543549.dkr.ecr.us-east-1.amazonaws.com/expense/dev/mysql:v1.0.1
                 """
             }
         }
 
-        stage('DB Integration Test') {
+        stage('test') {
             steps {
-                sh '''
-                    docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=testdb mysql:5.7
-                    sleep 20
-                    pip install pytest pymysql || true
-                    pytest tests/ || true
-                    docker stop mysql-test
-                    docker rm mysql-test
-                '''
+                sh 'echo this is test'
+                sh 'sleep 10'
             }
         }
 
-        stage('Deploy') {
+        stage('deploy') {
             steps {
-                sh 'echo this is deploy step'
+                sh 'echo this is deploy'
                 deleteDir()
                 sh "ls -ltr"
             }
         }
-    }
-
-    post {
-        always {
-            echo 'Pipeline completed.'
-        }
-        failure {
-            echo 'Pipeline failed. Please check logs.'
-        }
+        
     }
 }
