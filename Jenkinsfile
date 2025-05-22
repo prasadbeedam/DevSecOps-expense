@@ -1,27 +1,31 @@
-Pipeline{
-       agent {
-             label 'AGENT-1'
-       }
-       option {
-            timeout(time: 30, unit: 'MINUTES')
-            disableConcurrentBuilds()
+pipeline {
+    agent {
+        label 'AGENT-1'
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('build') {
+            steps {
+                sh 'echo this is build'
+            }
         }
-        stages{
-           stage ('build') {
-             step {
-                    sh 'echo this is build'
-               }
+
+        stage('test') {
+            steps {
+                sh 'echo this is test'
+                sh 'sleep 10'
             }
-           stage ('test') {
-             step {
-                  sh 'echo this is test'
-                  sh 'sleep 10'
-                }
-             }
-          stage ('deploy'){
-            step {
-              sh 'echo this is deploy'
+        }
+
+        stage('deploy') {
+            steps {
+                sh 'echo this is deploy'
             }
-          }       
+        }
     }
 }
